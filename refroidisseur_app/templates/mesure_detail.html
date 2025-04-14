@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Détail Mesure #{{ mesure.id }}</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 40px auto;
+    }
+    .card-custom {
+      background-color: white;
+      border-radius: 14px;
+      padding: 30px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    }
+    .section-title {
+      color: #007acc;
+      margin-bottom: 20px;
+    }
+    .table th {
+      background-color: #007acc;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container animate__animated animate__fadeIn">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="section-title"><i class="fa-solid fa-file-alt"></i> Détail Mesure #{{ mesure.id }}</h2>
+    <div>
+      <a href="{% url 'mesures_list' %}" class="btn btn-secondary me-2">
+        <i class="fa-solid fa-arrow-left"></i> Retour
+      </a>
+      <a href="{% url 'export_pdf' mesure.id %}" class="btn btn-danger">
+        <i class="fa-solid fa-file-pdf"></i> Exporter PDF
+      </a>
+    </div>
+  </div>
+
+  <!-- Infos de base -->
+  <div class="card card-custom mb-4">
+    <p><strong>Date :</strong> {{ mesure.date_heure|date:"Y-m-d H:i" }}</p>
+    <p><strong>Débit Farine :</strong> {{ mesure.debit_farine }} kg/h</p>
+    <p><strong>Commentaires :</strong> {{ mesure.commentaires|default:"—" }}</p>
+  </div>
+
+  <!-- Ventilateurs -->
+  <div class="card card-custom mb-4">
+    <h4 class="section-title"><i class="fa-solid fa-fan"></i> Ventilateurs</h4>
+    <ul class="list-group">
+      {% for vent in mesure.ventilateurs.all %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          {{ vent.nom }}
+          <span class="badge bg-primary rounded-pill">{{ vent.debit }} Nm³/h</span>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <!-- Graphiques -->
+  {% if graphs %}
+  <div class="card card-custom mb-4">
+    <h4 class="section-title"><i class="fa-solid fa-chart-line"></i> Graphiques</h4>
+    <div class="row">
+      {% for g in graphs %}
+      <div class="col-md-6 mb-4">
+        <img src="data:image/png;base64,{{ g }}" class="img-fluid rounded border shadow-sm" alt="Graphique">
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Résultats Calculés -->
+  <div class="card card-custom mb-4">
+    <h4 class="section-title"><i class="fa-solid fa-calculator"></i> Résultats Calculés</h4>
+    <div class="table-responsive">
+      <table class="table table-bordered align-middle">
+        <thead>
+          <tr>
+            <th>Grate</th>
+            <th>Chambre</th>
+            <th>Fan</th>
+            <th>Débit (Nm³/h)</th>
+            <th>Sp. Flow (kg/kg)</th>
+            <th>Surface (m²)</th>
+            <th>Sp. Air Load (Nm³/s/m²)</th>
+            <th>Sp. Air Load (kg/min/m²)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in mesure.resultats.all %}
+          <tr>
+            <td>{{ r.grate }}</td>
+            <td>{{ r.chambre }}</td>
+            <td>{{ r.fan }}</td>
+            <td>{{ r.flow }}</td>
+            <td>{{ r.flow_specifique }}</td>
+            <td>{{ r.area }}</td>
+            <td>{{ r.sp_air_load }}</td>
+            <td>{{ r.sp_air_load_kg }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Images -->
+  <div class="card card-custom mb-4">
+    <h4 class="section-title"><i class="fa-solid fa-image"></i> Images ajoutées</h4>
+    {% if mesure.images.all %}
+    <div class="row">
+      {% for img in mesure.images.all %}
+        <div class="col-md-4 mb-3">
+          <img src="{{ img.image.url }}" class="img-fluid rounded shadow-sm" alt="Image">
+        </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-muted">Aucune image disponible pour cette mesure.</p>
+    {% endif %}
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

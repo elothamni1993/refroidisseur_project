@@ -1,0 +1,8 @@
+<h3>Confirmer la suppression</h3>
+<p>Voulez-vous vraiment supprimer la mesure du {{ mesure.date_heure }} ?</p>
+
+<form method="post">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Oui, Supprimer</button>
+  <a href="{% url 'mesures_list' %}" class="btn btn-secondary">Annuler</a>
+</form>

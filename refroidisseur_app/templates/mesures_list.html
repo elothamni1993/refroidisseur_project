@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Historique des Mesures</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    body {
+      background-color: #f5f7fa;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+    }
+    .card-custom {
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+      padding: 20px;
+      background-color: #ffffff;
+    }
+    .search-input {
+      max-width: 320px;
+    }
+    .table thead th {
+      background-color: #007acc;
+      color: white;
+    }
+    .table td, .table th {
+      vertical-align: middle;
+    }
+    .btn-sm {
+      padding: 4px 10px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-primary">📊 Historique des Mesures</h2>
+    <a href="{% url 'index' %}" class="btn btn-primary">
+      <i class="fa-solid fa-plus"></i> Nouvelle Mesure
+    </a>
+  </div>
+
+  <!-- Formulaire de recherche -->
+  <form method="get" class="d-flex justify-content-start align-items-center mb-4 gap-2">
+    <input type="text" name="q" value="{{ query }}" class="form-control search-input" placeholder="🔍 Rechercher par ID, date ou commentaire...">
+    <button type="submit" class="btn btn-outline-primary">
+      <i class="fa fa-search"></i>
+    </button>
+  </form>
+
+  <!-- Tableau responsive -->
+  <div class="card card-custom animate__animated animate__fadeInUp">
+    <div class="table-responsive">
+      <table class="table table-bordered align-middle">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Date</th>
+            <th>Débit Farine</th>
+            <th>Ventilateurs</th>
+            <th>Commentaires</th>
+            <th style="width: 150px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for mesure in mesures %}
+          <tr>
+            <td><strong>{{ mesure.id }}</strong></td>
+            <td>{{ mesure.date_heure|date:"Y-m-d H:i" }}</td>
+            <td>{{ mesure.debit_farine }} kg/h</td>
+            <td>
+              {% for vent in mesure.ventilateurs.all %}
+                <span class="badge bg-light text-dark border">{{ vent.nom }}: {{ vent.debit }}</span><br>
+              {% endfor %}
+            </td>
+            <td>{{ mesure.commentaires|default:"—" }}</td>
+            <td>
+              <a href="{% url 'mesure_detail' mesure.id %}" class="btn btn-info btn-sm mb-1">
+                <i class="fa-solid fa-eye"></i>
+              </a>
+              <form method="post" action="{% url 'mesure_delete' mesure.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Confirmer la suppression ?')">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="text-center text-muted">Aucune mesure trouvée</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

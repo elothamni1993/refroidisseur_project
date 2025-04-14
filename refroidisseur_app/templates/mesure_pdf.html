@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; font-size: 12px; }
+    h2, h4 { color: #007acc; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ccc; padding: 6px; text-align: center; }
+    th { background-color: #007acc; color: white; }
+    .image { margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+  <h2>Détail Mesure #{{ mesure.id }}</h2>
+  <p><strong>Date :</strong> {{ mesure.date_heure|date:"Y-m-d H:i" }}</p>
+  <p><strong>Débit Farine :</strong> {{ mesure.debit_farine }} kg/h</p>
+  <p><strong>Commentaires :</strong> {{ mesure.commentaires|default:"—" }}</p>
+
+  <h4>Ventilateurs</h4>
+  <table>
+    <tr>
+      <th>Nom</th>
+      <th>Débit (Nm³/h)</th>
+    </tr>
+    {% for vent in mesure.ventilateurs.all %}
+    <tr>
+      <td>{{ vent.nom }}</td>
+      <td>{{ vent.debit }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h4>Résultats Calculés</h4>
+  <table>
+    <tr>
+      <th>Grate</th>
+      <th>Chambre</th>
+      <th>Fan</th>
+      <th>Débit (Nm³/h)</th>
+      <th>Sp. Flow (kg/kg)</th>
+      <th>Surface (m²)</th>
+      <th>Sp. Air Load (Nm³/s/m²)</th>
+      <th>Sp. Air Load (kg/min/m²)</th>
+    </tr>
+    {% for r in mesure.resultats.all %}
+    <tr>
+      <td>{{ r.grate }}</td>
+      <td>{{ r.chambre }}</td>
+      <td>{{ r.fan }}</td>
+      <td>{{ r.flow }}</td>
+      <td>{{ r.flow_specifique }}</td>
+      <td>{{ r.area }}</td>
+      <td>{{ r.sp_air_load }}</td>
+      <td>{{ r.sp_air_load_kg }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h4>Graphiques</h4>
+  {% for g in graphs %}
+    <div class="image">
+      <img src="data:image/png;base64,{{ g }}" width="450" />
+    </div>
+  {% endfor %}
+
+  <h4>Images Ajoutées</h4>
+  {% for img in mesure.images.all %}
+    <div class="image">
+      <img src="{{ img.image.url }}" width="300" />
+    </div>
+  {% endfor %}
+
+</body>
+</html>
