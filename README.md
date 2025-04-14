@@ -22,3 +22,19 @@ Ce projet est une application web développée avec **Django** qui permet de sui
 
 ## 📂 Structure du projet
 
+refroidisseur_project/ │ ├── refroidisseur_app/ │ ├── models.py # Modèles : Mesure, VentilateurMesure, ResultatCalcul, Image │ ├── views.py # Logique des vues │ ├── templates/ # Fichiers HTML (index, détails, liste, PDF) │ └── static/ # CSS/JS statique (optionnel) │ ├── media/ # Dossier pour stocker les images et Excel ├── db.sqlite3 # Base de données locale ├── manage.py # Commandes Django └── requirements.txt # Dépendances Python
+
+
+## ▶️ Lancer le projet localement
+
+```bash
+git clone https://github.com/elothamni1993/refroidisseur_project.git
+cd refroidisseur_project
+pip install -r requirements.txt
+
+# Créer la base de données et les tables
+python manage.py makemigrations
+python manage.py migrate
+
+# Démarrer le serveur
+python manage.py runserver
